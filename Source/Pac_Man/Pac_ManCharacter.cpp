@@ -10,6 +10,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Public/EatableEntity/EatableBase.h"
+#include "Public/EatableEntity/SuperEatable.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -30,8 +32,27 @@ APac_ManCharacter::APac_ManCharacter()
 	GetCharacterMovement()->MinAnalogWalkSpeed = 0.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 0.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
+
+	DataComponent = CreateDefaultSubobject<UPacManDataComponent>("Pac_man_DataComponent");
+
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddUniqueDynamic(this, &APac_ManCharacter::OnHitSomething);
 }
 
+void APac_ManCharacter::OnHitSomething(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                       UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                                       const FHitResult& SweepResult)
+{
+	if (AEatableBase* Eatable = Cast<AEatableBase>(OtherActor))
+	{
+		DataComponent->AddScore(Eatable->GetScoreGiven());
+		//could use a interface but too lazy
+		if (ASuperEatable* SuperEatable = Cast<ASuperEatable>(Eatable))
+		{
+			SuperEatable->NotifyGhostFear();
+		}
+		Eatable->Destroy();
+	}
+}
 
 void APac_ManCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -46,7 +67,8 @@ void APac_ManCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APac_ManCharacter::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this,
+		                                   &APac_ManCharacter::Move);
 	}
 }
 

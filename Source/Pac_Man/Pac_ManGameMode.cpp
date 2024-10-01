@@ -6,10 +6,21 @@
 
 APac_ManGameMode::APac_ManGameMode()
 {
-	// set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter"));
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(
+		TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter"));
 	if (PlayerPawnBPClass.Class != NULL)
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
+	}
+}
+
+void APac_ManGameMode::RemoveEatableInstance()
+{
+	EatableInstance--;
+
+	//this mean the game is finish
+	if (EatableInstance <= 0)
+	{
+		OnEatableReachZero_Event.Broadcast();
 	}
 }
