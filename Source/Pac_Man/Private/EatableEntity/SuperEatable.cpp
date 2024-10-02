@@ -10,9 +10,14 @@ ASuperEatable::ASuperEatable()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+float ASuperEatable::OnEatBegin()
+{
+	const float Score = Super::OnEatBegin();
+	NotifyGhostFear();
+	return Score;
+}
+
 void ASuperEatable::BeginPlay()
 {
 	Super::BeginPlay();
 }
-
-

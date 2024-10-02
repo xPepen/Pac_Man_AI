@@ -2,16 +2,13 @@
 
 #include "Pac_ManCharacter.h"
 #include "Engine/LocalPlayer.h"
-#include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Public/EatableEntity/EatableBase.h"
-#include "Public/EatableEntity/SuperEatable.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -44,12 +41,7 @@ void APac_ManCharacter::OnHitSomething(UPrimitiveComponent* OverlappedComponent,
 {
 	if (AEatableBase* Eatable = Cast<AEatableBase>(OtherActor))
 	{
-		DataComponent->AddScore(Eatable->GetScoreGiven());
-		//could use a interface but too lazy
-		if (ASuperEatable* SuperEatable = Cast<ASuperEatable>(Eatable))
-		{
-			SuperEatable->NotifyGhostFear();
-		}
+		DataComponent->AddScore(Eatable->OnEatBegin());
 		Eatable->Destroy();
 	}
 }
@@ -98,7 +90,7 @@ void APac_ManCharacter::Move(const FInputActionValue& Value)
 		}
 		else if (FMath::Abs(TargetDirection.Y) > 0.0f && !bHasChange)
 		{
-			Direction = FVector2D(0.0f, TargetDirection.Y);
+			Direction = FVector2D(0.0f,  TargetDirection.Y);
 		}
 
 		AddMovementInput(ForwardDirection, Direction.Y);

@@ -15,13 +15,15 @@ public:
 	ASuperEatable();
 	
 public:
-	void NotifyGhostFear(){};
+	virtual float OnEatBegin() override;
+	UFUNCTION(BlueprintImplementableEvent)
+	void NotifyGhostFear();
 
 protected:
 	virtual void BeginPlay() override;
 
-	// UFUNCTION(BlueprintCallable)
-	// void FearGhost();
+	UFUNCTION(BlueprintCallable)
+	void OnFearGhosts(){};
 
 	// TArray<Ghost>
 

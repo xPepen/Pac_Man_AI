@@ -39,9 +39,13 @@ class APac_ManCharacter : public ACharacter
 public:
 	APac_ManCharacter();
 
+public:
+	FORCEINLINE UPacManDataComponent* GetDataComponent() const { return DataComponent; }
+
 protected:
 	UFUNCTION()
-	void OnHitSomething(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,const FHitResult& SweepResult);
+	void OnHitSomething(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	                    int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	void Move(const FInputActionValue& Value);
 
