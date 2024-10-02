@@ -43,6 +43,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void SetAliveMode();
+	
+	UFUNCTION(BlueprintCallable)
+	EGhostState GetCurrentState() const { return CurrentState; }
 
 protected:
 	//Those three function mostly use for changing visual
