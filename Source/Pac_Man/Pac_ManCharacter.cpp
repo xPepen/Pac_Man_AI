@@ -98,7 +98,7 @@ void APac_ManCharacter::SetActorActive(const bool bIsActive)
 void APac_ManCharacter::OnRespawnPacMan()
 {
 	SetActorActive(true);
-	UnPossessed();
+	EnableInput(PacManController);
 }
 
 void APac_ManCharacter::OnPacManEaten(const int LifeRemain)
@@ -109,9 +109,9 @@ void APac_ManCharacter::OnPacManEaten(const int LifeRemain)
 		return;
 	}
 
+	DisableInput(PacManController);
 	SetActorActive(false);
 	SetActorLocation(InitialPosition);
-	UnPossessed();
 	GetWorld()->GetTimerManager().SetTimer(RespawnPacmanTimerHandle, this, &APac_ManCharacter::OnRespawnPacMan, 1.0f,
 	                                       false);
 }
@@ -144,7 +144,7 @@ void APac_ManCharacter::Move(const FInputActionValue& Value)
 		{
 			Direction = FVector2D(0.0f, TargetDirection.Y);
 		}
-		if(TargetDirection == FVector2D::ZeroVector)
+		if (TargetDirection == FVector2D::ZeroVector)
 		{
 			Direction = FVector2D(0, 0);
 		}
