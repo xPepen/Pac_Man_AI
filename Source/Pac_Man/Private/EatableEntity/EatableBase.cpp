@@ -10,10 +10,15 @@ AEatableBase::AEatableBase()
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	SetRootComponent(RootComponent);
 
-	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EatableVisual"));
-	WeaponMesh->SetupAttachment(RootComponent);
+	EatableMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EatableVisual"));
+	EatableMesh->SetupAttachment(RootComponent);
 
 	ScoreGiven = FMath::RandRange(50, 125);
+}
+
+float AEatableBase::OnEatBegin()
+{
+	return GetScoreGiven();
 }
 
 void AEatableBase::BeginPlay()

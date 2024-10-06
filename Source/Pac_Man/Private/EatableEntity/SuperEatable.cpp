@@ -1,18 +1,19 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿#include "Pac_Man/Public/EatableEntity/SuperEatable.h"
+#include "Pac_Man/Pac_ManGameMode.h"
 
 
-#include "Pac_Man/Public/EatableEntity/SuperEatable.h"
-
-
-// Sets default values
 ASuperEatable::ASuperEatable()
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void ASuperEatable::BeginPlay()
+float ASuperEatable::OnEatBegin()
 {
-	Super::BeginPlay();
+	const float Score = Super::OnEatBegin();
+	if (const APac_ManGameMode* GameMode = Cast<APac_ManGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		GameMode->FearAllGhost();
+	}
+
+	return Score;
 }
-
-
