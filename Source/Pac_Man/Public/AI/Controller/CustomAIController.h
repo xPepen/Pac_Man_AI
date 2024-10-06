@@ -19,4 +19,9 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UBehaviorTree> BehaviorTree;
+
+
+private:
+	UFUNCTION()
+	void OnGameStateChange(const bool State);
 };

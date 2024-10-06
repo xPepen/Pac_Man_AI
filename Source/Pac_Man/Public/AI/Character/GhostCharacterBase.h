@@ -47,6 +47,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FVector GetStartPosition() const { return StartLocation; }
 
+	UFUNCTION(BlueprintCallable)
+	void TeleportGhostToHome() { SetActorLocation(StartLocation); };
+
 protected:
 	//Those three function mostly use for changing visual
 
