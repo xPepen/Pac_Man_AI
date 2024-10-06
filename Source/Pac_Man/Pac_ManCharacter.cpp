@@ -2,15 +2,16 @@
 
 #include "Pac_ManCharacter.h"
 #include "Engine/LocalPlayer.h"
+#include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-#include "Pac_ManGameMode.h"
-#include "AI/Character/GhostCharacterBase.h"
 #include "Public/EatableEntity/EatableBase.h"
+#include "Public/EatableEntity/SuperEatable.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -35,8 +36,6 @@ APac_ManCharacter::APac_ManCharacter()
 	DataComponent = CreateDefaultSubobject<UPacManDataComponent>("Pac_man_DataComponent");
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddUniqueDynamic(this, &APac_ManCharacter::OnHitSomething);
-
-	GetDataComponent()->OnLifeRemainChanged_Event.AddUniqueDynamic(this, &APac_ManCharacter::OnPacManEaten);
 }
 
 void APac_ManCharacter::OnHitSomething(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -45,30 +44,14 @@ void APac_ManCharacter::OnHitSomething(UPrimitiveComponent* OverlappedComponent,
 {
 	if (AEatableBase* Eatable = Cast<AEatableBase>(OtherActor))
 	{
-		DataComponent->AddScore(Eatable->OnEatBegin());
+		DataComponent->AddScore(Eatable->GetScoreGiven());
+		//could use a interface but too lazy
+		if (ASuperEatable* SuperEatable = Cast<ASuperEatable>(Eatable))
+		{
+			SuperEatable->NotifyGhostFear();
+		}
 		Eatable->Destroy();
 	}
-
-	if (AGhostCharacterBase* GhostEntity = Cast<AGhostCharacterBase>(OtherActor))
-	{
-		if (GhostEntity->GetCurrentState() == EGhostState::Fear)
-		{
-			DataComponent->AddScore(GhostEntity->GetScoreGiven());
-			GhostEntity->SetDeadMode();
-		}
-	}
-}
-
-void APac_ManCharacter::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-	PacManController = Cast<APlayerController>(NewController);
-}
-
-void APac_ManCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	InitialPosition = GetActorLocation();
 }
 
 void APac_ManCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -89,41 +72,8 @@ void APac_ManCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	}
 }
 
-void APac_ManCharacter::SetActorActive(const bool bIsActive)
-{
-	this->SetActorTickEnabled(bIsActive);
-	this->SetActorHiddenInGame(!bIsActive);
-	this->SetActorEnableCollision(bIsActive);
-}
 
-void APac_ManCharacter::OnRespawnPacMan()
-{
-	EnableInput(PacManController);
-}
-
-void APac_ManCharacter::OnPacManEaten(const int LifeRemain)
-{
-	if (LifeRemain <= 0)
-	{
-		OnGameOver();
-		return;
-	}
-	if (APac_ManGameMode* GameMode = Cast<APac_ManGameMode>(GetWorld()->GetAuthGameMode()))
-	{
-		if (LifeRemain > 0)
-		{
-			GameMode->SetIsGamePlaying(false);
-		}
-	}
-	ConsumeMovementInputVector();
-	DisableInput(PacManController);
-	SetActorLocation(InitialPosition);
-	GetWorld()->GetTimerManager().SetTimer(RespawnPacmanTimerHandle, this, &APac_ManCharacter::OnRespawnPacMan, 0.5f,
-	                                       false);
-}
-
-
-FVector2d Direction(0, 0);
+FVector2d Direction(1, 0);
 
 void APac_ManCharacter::Move(const FInputActionValue& Value)
 {
@@ -149,10 +99,6 @@ void APac_ManCharacter::Move(const FInputActionValue& Value)
 		else if (FMath::Abs(TargetDirection.Y) > 0.0f && !bHasChange)
 		{
 			Direction = FVector2D(0.0f, TargetDirection.Y);
-		}
-		if (TargetDirection == FVector2D::ZeroVector)
-		{
-			Direction = FVector2D(0, 0);
 		}
 
 		AddMovementInput(ForwardDirection, Direction.Y);

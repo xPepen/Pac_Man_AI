@@ -24,12 +24,3 @@ void APac_ManGameMode::RemoveEatableInstance()
 		OnEatableReachZero_Event.Broadcast();
 	}
 }
-
-void APac_ManGameMode::SetIsGamePlaying(const bool NewState)
-{
-	IsPlaying = NewState;
-	if(OnGameStateChanged_Event.IsBound())
-	{
-		OnGameStateChanged_Event.Broadcast(IsPlaying);
-	}
-}

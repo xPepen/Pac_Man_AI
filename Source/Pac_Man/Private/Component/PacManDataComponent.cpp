@@ -1,7 +1,5 @@
 ﻿#include "Pac_Man/Public/Component/PacManDataComponent.h"
 
-#include "Pac_Man/Pac_ManGameMode.h"
-
 
 UPacManDataComponent::UPacManDataComponent()
 {
@@ -31,6 +29,5 @@ void UPacManDataComponent::AddLife()
 void UPacManDataComponent::RemoveLife()
 {
 	LifeRemain--;
-	
 	OnLifeRemainChanged_Event.Broadcast(LifeRemain);
 }

@@ -13,7 +13,16 @@ class PAC_MAN_API ASuperEatable : public AEatableBase
 
 public:
 	ASuperEatable();
-
+	
 public:
-	virtual float OnEatBegin() override;
+	void NotifyGhostFear(){};
+
+protected:
+	virtual void BeginPlay() override;
+
+	// UFUNCTION(BlueprintCallable)
+	// void FearGhost();
+
+	// TArray<Ghost>
+
 };

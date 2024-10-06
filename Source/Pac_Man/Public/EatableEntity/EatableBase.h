@@ -10,19 +10,17 @@ UCLASS()
 class PAC_MAN_API AEatableBase : public AActor
 {
 	GENERATED_BODY()
-	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = WeaponInfo, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UStaticMeshComponent> EatableMesh;
+	TObjectPtr<UStaticMeshComponent> WeaponMesh;
 
 public:
 	AEatableBase();
 
 public:
-	virtual float OnEatBegin();
+	float GetScoreGiven() const { return ScoreGiven; }
 
 protected:
 	virtual void BeginPlay() override;
-	float GetScoreGiven() const { return ScoreGiven; }
 
 private:
 	UFUNCTION()
