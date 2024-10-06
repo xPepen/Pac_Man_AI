@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "Public/Component/PacManDataComponent.h"
+#include "Components/SphereComponent.h"
 #include "Pac_ManCharacter.generated.h"
 
 class USpringArmComponent;
@@ -43,13 +44,41 @@ public:
 	FORCEINLINE UPacManDataComponent* GetDataComponent() const { return DataComponent; }
 
 protected:
-	UFUNCTION()
-	void OnHitSomething(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	                    int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
 
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void BeginPlay() override;
+	
 	void Move(const FInputActionValue& Value);
 
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	
+	void SetActorActive(const bool bIsActive);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnGameOver();
+
+private:
+	//Function bind on some event
+	UPROPERTY()
+	APlayerController* PacManController;
+
+	UFUNCTION()
+	void OnRespawnPacMan();
+
+	UFUNCTION()
+	void OnHitSomething(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+						int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnPacManEaten(const int LifeRemain);
+
+	UPROPERTY()
+	FVector InitialPosition;
+
+	FTimerHandle RespawnPacmanTimerHandle;
+
 };
