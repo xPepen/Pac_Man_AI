@@ -8,6 +8,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Pac_ManGameMode.h"
 #include "AI/Character/GhostCharacterBase.h"
 #include "Public/EatableEntity/EatableBase.h"
 
@@ -97,7 +98,6 @@ void APac_ManCharacter::SetActorActive(const bool bIsActive)
 
 void APac_ManCharacter::OnRespawnPacMan()
 {
-	SetActorActive(true);
 	EnableInput(PacManController);
 }
 
@@ -108,11 +108,17 @@ void APac_ManCharacter::OnPacManEaten(const int LifeRemain)
 		OnGameOver();
 		return;
 	}
-
+	if (APac_ManGameMode* GameMode = Cast<APac_ManGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (LifeRemain > 0)
+		{
+			GameMode->SetIsGamePlaying(false);
+		}
+	}
+	ConsumeMovementInputVector();
 	DisableInput(PacManController);
-	SetActorActive(false);
 	SetActorLocation(InitialPosition);
-	GetWorld()->GetTimerManager().SetTimer(RespawnPacmanTimerHandle, this, &APac_ManCharacter::OnRespawnPacMan, 1.0f,
+	GetWorld()->GetTimerManager().SetTimer(RespawnPacmanTimerHandle, this, &APac_ManCharacter::OnRespawnPacMan, 0.5f,
 	                                       false);
 }
 
